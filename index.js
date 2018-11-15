@@ -1,20 +1,23 @@
 const request = require(`request`)
-const { V3Auth } = require("./auth")
 
-function unimplemented(method) {
-  return new Error('You have to implement ' + method)
+function isOk(response) {
+  return response && 199 < response.statusCode && response.statusCode < 300
 }
 
-class Swift {
-  constructor(credentials) {
-    let url = credentials.url
-    if (url.indexOf("v3") != -1) {
-      this.auth = new V3Auth(credentials)
-    } else if (url.indexOf("v2") != -1) {
-      this.auth = new V2Auth(credentials)
-    } else {
-      this.auth = new Auth(credentials)
-    }
+function onError(reject, error, response) {
+  if (error) {
+    reject(error)
+  } else if (response.body.error) {
+    reject(response.body.error)
+  } else {
+    reject(response.body)
+  }
+}
+
+module.exports = class Swift {
+  constructor(url, data) {
+    this.url = url
+    this.auth = require("./auth")(url, data)
     this.token = ""
     this.storageUrl = ""
   }
@@ -23,30 +26,49 @@ class Swift {
     return this.token != "" && this.storageUrl != ""
   }
 
+  unauthenticate() {
+    this.token = ""
+    this.storageUrl = ""
+  }
+
   async authenticate() {
-    let headers = {
-      "Content-Type": "application/json"
-    }
     let options = {
-      url: this.auth.authUrl(),
+      url: this.auth.authUrl(this.url),
       method: 'POST',
-      headers: headers,
-      json: this.auth.requestData()
+      headers: {
+        "Content-Type": "application/json"
+      },
+      json: this.auth.json()
     }
+
     return new Promise((resolve, reject) => {
       request(options, (error, response, body) => {
-        if (error) {
-          reject(error)
-        } else if (Math.floor(response.statusCode / 200) == 1) {
+        if (isOk(response)) {
           this.token = this.auth.token(response)
           this.storageUrl = this.auth.storageUrl(body)
           resolve(this)
         } else {
-          reject(response.body.error)
+          onError(reject, error, response)
+        }
+      })
+    })
+  }
+
+  containerNames() {
+    return new Promise((resolve, reject) => {
+      request({
+        url: this.storageUrl,
+        method: 'GET',
+        headers: {
+          "X-Auth-Token": this.token
+        }
+      }, (error, response, body) => {
+        if (isOk(response)) {
+          resolve(body.split("\n").filter(e => e))
+        } else {
+          onError(reject, error, response)
         }
       })
     })
   }
 }
-
-module.exports = Swift

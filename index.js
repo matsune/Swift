@@ -90,6 +90,16 @@ module.exports = class Swift {
     })
   }
 
+  async updateAccount(headers = {}) {
+    return this.call({
+      url: this.storageUrl,
+      method: "POST",
+      headers: headers
+    }, (resolve, response) => {
+      resolve(response.headers)
+    })
+  }
+
   async createContainer(container, headers = {}) {
     return this.call({
       url: this.storageUrl+"/"+container,

@@ -35,9 +35,6 @@ module.exports = class Swift {
     let options = {
       url: this.auth.authUrl(this.url),
       method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
       json: this.auth.json()
     }
 
@@ -134,7 +131,7 @@ module.exports = class Swift {
       method: "GET",
       qs: qs
     }, (resolve, response) => {
-      resolve(response.headers)
+      resolve(response.body)
     })
   }
 
@@ -201,6 +198,41 @@ module.exports = class Swift {
       method: "DELETE"
     }, (resolve, response) => {
       resolve()
+    })
+  }
+
+  /**
+  * https://developer.openstack.org/api-ref/object-store/?expanded=create-or-update-object-metadata-detail,show-container-details-and-list-objects-detail,get-object-content-and-metadata-detail#get-object-content-and-metadata
+  *
+  * GET
+  * /v1/{account}/{container}/{object}
+  * Get object content and metadata
+  */
+  async object(container, objectName, qs, headers) {
+    return this.call({
+      url: this.storageUrl+"/"+container+"/"+objectName,
+      method: "GET",
+      qs: qs,
+      headers: headers
+    }, (resolve, response) => {
+      resolve(response.body)
+    })
+  }
+
+  /**
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail,create-or-update-object-metadata-detail#create-or-replace-object
+  *
+  * PUT
+  * /v1/{account}/{container}/{object}
+  * Create or replace object
+  */
+  async createObject(container, objectName, body) {
+    return this.call({
+      url: this.storageUrl+"/"+container+"/"+objectName,
+      method: "PUT",
+      body: body
+    }, (resolve, response) => {
+      resolve(response.headers)
     })
   }
 

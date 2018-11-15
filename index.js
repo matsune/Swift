@@ -173,6 +173,22 @@ module.exports = class Swift {
   }
 
   /**
+  * https://developer.openstack.org/api-ref/object-store/?expanded=#show-container-metadata
+  *
+  * HEAD
+  * /v1/{account}/{container}
+  * Show container metadata
+  */
+  async metadataContainer(container) {
+    return this.call({
+      url: this.storageUrl+"/"+container,
+      method: "HEAD"
+    }, (resolve, response) => {
+      resolve(response.headers)
+    })
+  }
+
+  /**
   * https://developer.openstack.org/api-ref/object-store/?expanded=#delete-container
   *
   * DELETE

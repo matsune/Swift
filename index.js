@@ -70,7 +70,7 @@ module.exports = class Swift {
     })
   }
 
-  async containerNames(qs) {
+  async containers(qs) {
     return this.call({
       url: this.storageUrl,
       method: "GET",
@@ -80,14 +80,13 @@ module.exports = class Swift {
     })
   }
 
-  async containers(qs = {}) {
-    qs.format = "json"
+  async account(qs) {
     return this.call({
       url: this.storageUrl,
-      method: "GET",
+      method: "HEAD",
       qs: qs
     }, (resolve, response) => {
-      resolve(response.body)
+      resolve(response.headers)
     })
   }
 

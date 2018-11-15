@@ -54,21 +54,35 @@ module.exports = class Swift {
     })
   }
 
-  containerNames() {
+  async call(url, method, qs, onSuccess) {
     return new Promise((resolve, reject) => {
       request({
-        url: this.storageUrl,
-        method: 'GET',
+        uri: url,
+        method: method,
+        qs: qs,
         headers: {
           "X-Auth-Token": this.token
         }
       }, (error, response, body) => {
         if (isOk(response)) {
-          resolve(body.split("\n").filter(e => e))
+          onSuccess(resolve, body)
         } else {
           onError(reject, error, response)
         }
       })
+    })
+  }
+
+  async containerNames(options) {
+    return this.call(this.storageUrl, "GET", options, (resolve, body) => {
+      resolve(body.split("\n").filter(e => e))
+    })
+  }
+
+  async containers(options = {}) {
+    options.format = "json"
+    return this.call(this.storageUrl, "GET", options, (resolve, body) => {
+      resolve(body)
     })
   }
 }

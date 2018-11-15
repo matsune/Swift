@@ -71,11 +71,11 @@ module.exports = class Swift {
   }
 
   /**
-  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-account-details-and-list-containers
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-account-details-and-list-containers
   *
-  *  GET
-  *  /v1/{account}
-  *  Show account details and list containers
+  * GET
+  * /v1/{account}
+  * Show account details and list containers
   */
   async containers(qs) {
     return this.call({
@@ -88,11 +88,11 @@ module.exports = class Swift {
   }
 
   /**
-  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-account-metadata
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-account-metadata
   *
-  *  HEAD
-  *  /v1/{account}
-  *  Show account metadata
+  * HEAD
+  * /v1/{account}
+  * Show account metadata
   */
   async account(qs) {
     return this.call({
@@ -105,11 +105,11 @@ module.exports = class Swift {
   }
 
   /**
-  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-update-or-delete-account-metadata
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-update-or-delete-account-metadata
   *
-  *  POST
-  *  /v1/{account}
-  *  Create, update, or delete account metadata
+  * POST
+  * /v1/{account}
+  * Create, update, or delete account metadata
   */
   async updateAccount(headers = {}) {
     return this.call({
@@ -122,11 +122,11 @@ module.exports = class Swift {
   }
 
   /**
-  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-container-details-and-list-objects
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-container-details-and-list-objects
   *
-  *  GET
-  *  /v1/{account}/{container}
-  *  Show container details and list objects
+  * GET
+  * /v1/{account}/{container}
+  * Show container details and list objects
   */
   async container(container, qs) {
     return this.call({
@@ -139,11 +139,11 @@ module.exports = class Swift {
   }
 
   /**
-  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-container
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-container
   *
-  *  PUT
-  *  /v1/{account}/{container}
-  *  Create container
+  * PUT
+  * /v1/{account}/{container}
+  * Create container
   */
   async createContainer(container, headers = {}) {
     return this.call({
@@ -155,13 +155,29 @@ module.exports = class Swift {
     })
   }
 
+  /**
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-update-or-delete-container-metadata
+  *
+  * POST
+  * /v1/{account}/{container}
+  * Create, update, or delete container metadata
+  */
+  async updateContainer(container, headers) {
+    return this.call({
+      url: this.storageUrl+"/"+container,
+      method: "POST",
+      headers: headers
+    }, (resolve, response) => {
+      resolve()
+    })
+  }
 
   /**
-  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-update-or-delete-container-metadata
+  * https://developer.openstack.org/api-ref/object-store/?expanded=#delete-container
   *
-  *  POST
-  *  /v1/{account}/{container}
-  *  Create, update, or delete container metadata
+  * DELETE
+  * /v1/{account}/{container}
+  * Delete container
   */
   async deleteContainer(container) {
     return this.call({

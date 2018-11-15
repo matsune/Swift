@@ -54,18 +54,15 @@ module.exports = class Swift {
     })
   }
 
-  async call(url, method, qs, onSuccess) {
+  async call(options, onSuccess) {
+    if (!options.headers) {
+      options.headers = {}
+    }
+    options.headers["X-Auth-Token"] = this.token
     return new Promise((resolve, reject) => {
-      request({
-        uri: url,
-        method: method,
-        qs: qs,
-        headers: {
-          "X-Auth-Token": this.token
-        }
-      }, (error, response, body) => {
+      request(options, (error, response, body) => {
         if (isOk(response)) {
-          onSuccess(resolve, body)
+          onSuccess(resolve, response)
         } else {
           onError(reject, error, response)
         }
@@ -73,16 +70,44 @@ module.exports = class Swift {
     })
   }
 
-  async containerNames(options) {
-    return this.call(this.storageUrl, "GET", options, (resolve, body) => {
-      resolve(body.split("\n").filter(e => e))
+  async containerNames(qs) {
+    return this.call({
+      url: this.storageUrl,
+      method: "GET",
+      qs: qs
+    }, (resolve, response) => {
+      resolve(response.body.split("\n").filter(e => e))
     })
   }
 
-  async containers(options = {}) {
-    options.format = "json"
-    return this.call(this.storageUrl, "GET", options, (resolve, body) => {
-      resolve(body)
+  async containers(qs = {}) {
+    qs.format = "json"
+    return this.call({
+      url: this.storageUrl,
+      method: "GET",
+      qs: qs
+    }, (resolve, response) => {
+      resolve(response.body)
     })
   }
+
+  async createContainer(container, headers = {}) {
+    return this.call({
+      url: this.storageUrl+"/"+container,
+      method: "PUT",
+      headers: headers
+    }, (resolve, response) => {
+      resolve()
+    })
+  }
+
+  async deleteContainer(container) {
+    return this.call({
+      url: this.storageUrl+"/"+container,
+      method: "DELETE"
+    }, (resolve, response) => {
+      resolve()
+    })
+  }
+
 }

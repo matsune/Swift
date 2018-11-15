@@ -70,16 +70,30 @@ module.exports = class Swift {
     })
   }
 
+  /**
+  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-account-details-and-list-containers
+  *
+  *  GET
+  *  /v1/{account}
+  *  Show account details and list containers
+  */
   async containers(qs) {
     return this.call({
       url: this.storageUrl,
       method: "GET",
       qs: qs
     }, (resolve, response) => {
-      resolve(response.body.split("\n").filter(e => e))
+      resolve(response.body)
     })
   }
 
+  /**
+  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-account-metadata
+  *
+  *  HEAD
+  *  /v1/{account}
+  *  Show account metadata
+  */
   async account(qs) {
     return this.call({
       url: this.storageUrl,
@@ -90,6 +104,13 @@ module.exports = class Swift {
     })
   }
 
+  /**
+  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-update-or-delete-account-metadata
+  *
+  *  POST
+  *  /v1/{account}
+  *  Create, update, or delete account metadata
+  */
   async updateAccount(headers = {}) {
     return this.call({
       url: this.storageUrl,
@@ -100,6 +121,13 @@ module.exports = class Swift {
     })
   }
 
+  /**
+  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#show-container-details-and-list-objects
+  *
+  *  GET
+  *  /v1/{account}/{container}
+  *  Show container details and list objects
+  */
   async container(container, qs) {
     return this.call({
       url: this.storageUrl+"/"+container,
@@ -110,6 +138,13 @@ module.exports = class Swift {
     })
   }
 
+  /**
+  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-container
+  *
+  *  PUT
+  *  /v1/{account}/{container}
+  *  Create container
+  */
   async createContainer(container, headers = {}) {
     return this.call({
       url: this.storageUrl+"/"+container,
@@ -120,6 +155,14 @@ module.exports = class Swift {
     })
   }
 
+
+  /**
+  *  https://developer.openstack.org/api-ref/object-store/?expanded=show-container-metadata-detail#create-update-or-delete-container-metadata
+  *
+  *  POST
+  *  /v1/{account}/{container}
+  *  Create, update, or delete container metadata
+  */
   async deleteContainer(container) {
     return this.call({
       url: this.storageUrl+"/"+container,

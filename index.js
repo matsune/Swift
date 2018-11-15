@@ -100,6 +100,16 @@ module.exports = class Swift {
     })
   }
 
+  async container(container, qs) {
+    return this.call({
+      url: this.storageUrl+"/"+container,
+      method: "GET",
+      qs: qs
+    }, (resolve, response) => {
+      resolve(response.headers)
+    })
+  }
+
   async createContainer(container, headers = {}) {
     return this.call({
       url: this.storageUrl+"/"+container,

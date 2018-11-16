@@ -91,7 +91,7 @@ module.exports = class Swift {
   * /v1/{account}
   * Show account metadata
   */
-  async account(qs) {
+  async accountMetadata(qs) {
     return this.call({
       url: this.storageUrl,
       method: "HEAD",
@@ -176,7 +176,7 @@ module.exports = class Swift {
   * /v1/{account}/{container}
   * Show container metadata
   */
-  async metadataContainer(container) {
+  async containerMetadata(container) {
     return this.call({
       url: this.storageUrl+"/"+container,
       method: "HEAD"
@@ -265,6 +265,22 @@ module.exports = class Swift {
     return this.call({
       url: this.storageUrl+"/"+container+"/"+objectName,
       method: "DELETE"
+    }, (resolve, response) => {
+      resolve(response)
+    })
+  }
+
+  /**
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-details-and-list-objects-detail,show-object-metadata-detail#show-object-metadata
+  *
+  * HEAD
+  * /v1/{account}/{container}/{object}
+  * Show object metadata
+  */
+  async objectMetadata(container, objectName) {
+    return this.call({
+      url: this.storageUrl+"/"+container+"/"+objectName,
+      method: "HEAD"
     }, (resolve, response) => {
       resolve(response)
     })

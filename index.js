@@ -108,7 +108,7 @@ module.exports = class Swift {
   * /v1/{account}
   * Create, update, or delete account metadata
   */
-  async updateAccount(headers = {}) {
+  async updateAccountMetadata(headers) {
     return this.call({
       url: this.storageUrl,
       method: "POST",
@@ -142,7 +142,7 @@ module.exports = class Swift {
   * /v1/{account}/{container}
   * Create container
   */
-  async createContainer(container, headers = {}) {
+  async createContainer(container, headers) {
     return this.call({
       url: this.storageUrl+"/"+container,
       method: "PUT",
@@ -159,7 +159,7 @@ module.exports = class Swift {
   * /v1/{account}/{container}
   * Create, update, or delete container metadata
   */
-  async updateContainer(container, headers) {
+  async updateContainerMetadata(container, headers) {
     return this.call({
       url: this.storageUrl+"/"+container,
       method: "POST",
@@ -281,6 +281,23 @@ module.exports = class Swift {
     return this.call({
       url: this.storageUrl+"/"+container+"/"+objectName,
       method: "HEAD"
+    }, (resolve, response) => {
+      resolve(response)
+    })
+  }
+
+  /**
+  * https://developer.openstack.org/api-ref/object-store/?expanded=#create-or-update-object-metadata
+  *
+  * POST
+  * /v1/{account}/{container}/{object}
+  * Create or update object metadata
+  */
+  async updateObjectMetadata(container, objectName, headers) {
+    return this.call({
+      url: this.storageUrl+"/"+container+"/"+objectName,
+      method: "POST",
+      headers: headers
     }, (resolve, response) => {
       resolve(response)
     })

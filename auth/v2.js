@@ -26,9 +26,9 @@ module.exports = class V2Auth extends AuthBase {
     return v2Auth
   }
 
-  authOptions(url) {
+  authOptions(authUrl) {
     return {
-      url: url + "/tokens",
+      url: authUrl + "/tokens",
       method: 'POST',
       json: this.json()
     }

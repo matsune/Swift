@@ -78,9 +78,9 @@ module.exports = class V3Auth extends AuthBase {
     return v3Auth
   }
 
-  authOptions(url) {
+  authOptions(authUrl) {
     return {
-      url: url + "/auth/tokens",
+      url: authUrl + "/auth/tokens",
       method: 'POST',
       json: this.json()
     }

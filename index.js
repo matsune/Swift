@@ -15,9 +15,9 @@ function onError(reject, error, response) {
 }
 
 module.exports = class Swift {
-  constructor(url, data) {
-    this.url = url
-    this.auth = require("./auth")(url, data)
+  constructor(authUrl, data) {
+    this.authUrl = authUrl
+    this.auth = require("./auth")(authUrl, data)
     this.token = ""
     this.storageUrl = ""
   }
@@ -32,7 +32,7 @@ module.exports = class Swift {
   }
 
   async authenticate() {
-    let options = this.auth.authOptions(this.url)
+    let options = this.auth.authOptions(this.authUrl)
 
     return new Promise((resolve, reject) => {
       request(options, (error, response, body) => {

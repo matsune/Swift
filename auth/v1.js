@@ -1,9 +1,9 @@
 const AuthBase = require("./base")
 
 module.exports = class V1Auth extends AuthBase {
-  authOptions(url) {
+  authOptions(authUrl) {
     return {
-      url: url,
+      url: authUrl,
       method: 'GET',
       headers: {
         'x-storage-user': this.data.tenant+":"+this.data.userName,

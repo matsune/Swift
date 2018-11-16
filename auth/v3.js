@@ -5,33 +5,6 @@ const v3AuthMethodPassword     = "password"
 
 module.exports = class V3Auth extends AuthBase {
 
-  authUrl(url) {
-    return url + "/auth/tokens"
-  }
-
-  token(response) {
-    return response.headers["x-subject-token"]
-  }
-
-  storageUrl(body) {
-    let type = "object-store"
-    let _interface = "public"
-    let region = ""
-
-    if (!body.token.catalog) {
-      throw new Error("body.token.catalog not found")
-    }
-    let catalog = body.token.catalog.find(e => e.type == type)
-    if (!catalog) {
-      throw new Error("catalog not found")
-    }
-    let endpoint = catalog.endpoints.find(e => e.interface == _interface && (!region || region == e.region))
-    if (!endpoint) {
-      throw new Error("endpoint not found")
-    }
-    return endpoint.url
-  }
-
   json() {
     let v3Auth = {}
     let auth = {}
@@ -103,5 +76,36 @@ module.exports = class V3Auth extends AuthBase {
     auth.identity = identity
     v3Auth.auth = auth
     return v3Auth
+  }
+
+  authOptions(url) {
+    return {
+      url: url + "/auth/tokens",
+      method: 'POST',
+      json: this.json()
+    }
+  }
+
+  token(response) {
+    return response.headers["x-subject-token"]
+  }
+
+  storageUrl(response) {
+    let type = "object-store"
+    let _interface = "public"
+    let region = ""
+
+    if (!response.body.token.catalog) {
+      throw new Error("body.token.catalog not found")
+    }
+    let catalog = response.body.token.catalog.find(e => e.type == type)
+    if (!catalog) {
+      throw new Error("catalog not found")
+    }
+    let endpoint = catalog.endpoints.find(e => e.interface == _interface && (!region || region == e.region))
+    if (!endpoint) {
+      throw new Error("endpoint not found")
+    }
+    return endpoint.url
   }
 }

@@ -32,17 +32,13 @@ module.exports = class Swift {
   }
 
   async authenticate() {
-    let options = {
-      url: this.auth.authUrl(this.url),
-      method: 'POST',
-      json: this.auth.json()
-    }
+    let options = this.auth.authOptions(this.url)
 
     return new Promise((resolve, reject) => {
       request(options, (error, response, body) => {
         if (isOk(response)) {
           this.token = this.auth.token(response)
-          this.storageUrl = this.auth.storageUrl(body)
+          this.storageUrl = this.auth.storageUrl(response)
           resolve(this)
         } else {
           onError(reject, error, response)

@@ -8,19 +8,15 @@ module.exports = class AuthBase {
     return new Error('not implemented ' + method)
   }
 
-  authUrl(url) {
-    this.unimplemented("authUrl")
+  authOptions(url) {
+    this.unimplemented("authOptions")
   }
 
   token(response) {
     this.unimplemented("token")
   }
 
-  storageUrl(body) {
+  storageUrl(response) {
     this.unimplemented("storageUrl")
-  }
-
-  json() {
-    this.unimplemented("json")
   }
 }

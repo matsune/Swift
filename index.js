@@ -80,7 +80,7 @@ module.exports = class Swift {
       method: "GET",
       qs: qs
     }, (resolve, response) => {
-      resolve(response.body)
+      resolve(response)
     })
   }
 
@@ -97,7 +97,7 @@ module.exports = class Swift {
       method: "HEAD",
       qs: qs
     }, (resolve, response) => {
-      resolve(response.headers)
+      resolve(response)
     })
   }
 
@@ -114,7 +114,7 @@ module.exports = class Swift {
       method: "POST",
       headers: headers
     }, (resolve, response) => {
-      resolve(response.headers)
+      resolve(response)
     })
   }
 
@@ -131,7 +131,7 @@ module.exports = class Swift {
       method: "GET",
       qs: qs
     }, (resolve, response) => {
-      resolve(response.body)
+      resolve(response)
     })
   }
 
@@ -148,7 +148,7 @@ module.exports = class Swift {
       method: "PUT",
       headers: headers
     }, (resolve, response) => {
-      resolve()
+      resolve(response)
     })
   }
 
@@ -165,7 +165,7 @@ module.exports = class Swift {
       method: "POST",
       headers: headers
     }, (resolve, response) => {
-      resolve()
+      resolve(response)
     })
   }
 
@@ -181,7 +181,7 @@ module.exports = class Swift {
       url: this.storageUrl+"/"+container,
       method: "HEAD"
     }, (resolve, response) => {
-      resolve(response.headers)
+      resolve(response)
     })
   }
 
@@ -197,7 +197,7 @@ module.exports = class Swift {
       url: this.storageUrl+"/"+container,
       method: "DELETE"
     }, (resolve, response) => {
-      resolve()
+      resolve(response)
     })
   }
 
@@ -215,7 +215,7 @@ module.exports = class Swift {
       qs: qs,
       headers: headers
     }, (resolve, response) => {
-      resolve(response.body)
+      resolve(response)
     })
   }
 
@@ -232,7 +232,25 @@ module.exports = class Swift {
       method: "PUT",
       body: body
     }, (resolve, response) => {
-      resolve(response.headers)
+      resolve(response)
+    })
+  }
+
+  /**
+  * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-details-and-list-objects-detail#copy-object
+  *
+  * COPY
+  * /v1/{account}/{container}/{object}
+  * Copy object
+  */
+  async copyObject(srcContainer, srcObjectName, dstContainer, dstObjectName, headers = {}) {
+    headers["Destination"] = dstContainer+"/"+dstObjectName
+    return this.call({
+      url: this.storageUrl+"/"+srcContainer+"/"+srcObjectName,
+      method: "COPY",
+      headers: headers
+    }, (resolve, response) => {
+      resolve(response)
     })
   }
 
@@ -248,7 +266,7 @@ module.exports = class Swift {
       url: this.storageUrl+"/"+container+"/"+objectName,
       method: "DELETE"
     }, (resolve, response) => {
-      resolve(response.headers)
+      resolve(response)
     })
   }
 

@@ -1,12 +1,18 @@
 {
-  "name": "swift",
-  "version": "1.0.0",
-  "description": "",
+  "name": "client-swift",
+  "version": "0.1.0",
+  "description": "Object Storage OpenStack Swift client for Node.js",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "keywords": [
+    "object-storage",
+    "openstack",
+    "openstack-storage",
+    "swift"
+  ],
+  "author": "matsune",
   "license": "ISC",
   "dependencies": {
     "request": "^2.88.0"

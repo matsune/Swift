@@ -51,6 +51,16 @@ module.exports = class V2Auth extends AuthBase {
     if (!endpoint) {
       throw new Error("endpoints not found")
     }
-    return endpoint.publicURL
+
+    switch (this.data.endpointType || "public") {
+      case "internal":
+      return endpoint.internalURL
+      case "public":
+      return endpoint.publicURL
+      case "admin":
+      return endpoint.adminURL
+      default:
+      return ""
+    }
   }
 }

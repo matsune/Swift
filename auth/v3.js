@@ -1,8 +1,5 @@
 const AuthBase = require("./base")
 
-const v3AuthMethodToken        = "token"
-const v3AuthMethodPassword     = "password"
-
 module.exports = class V3Auth extends AuthBase {
 
   json() {
@@ -10,13 +7,8 @@ module.exports = class V3Auth extends AuthBase {
     let auth = {}
     let identity = {}
 
-    if (this.data.userName && this.data.userId) {
-      identity.methods = [v3AuthMethodToken]
-      identity.token = {
-        id: this.data.apiKey
-      }
-    } else {
-      identity.methods = [v3AuthMethodPassword]
+    if (this.data.userName || this.data.userId) {
+      identity.methods = ["password"]
       identity.password = {
         user: {
           name: this.data.userName,
@@ -28,10 +20,15 @@ module.exports = class V3Auth extends AuthBase {
       let domain = {}
       if (this.data.domain) {
         domain.name = this.data.domain
-      } else {
+      } else if (this.data.domainId) {
         domain.id = this.data.domainId
       }
       identity.password.user.domain = domain
+    } else {
+      identity.methods = ["token"]
+      identity.token = {
+        id: this.data.apiKey
+      }
     }
 
     if (this.data.trustId) {
@@ -92,7 +89,7 @@ module.exports = class V3Auth extends AuthBase {
 
   storageUrl(response) {
     let type = "object-store"
-    let _interface = "public"
+    let endpointType = this.data.endpointType || "public"
     let region = ""
 
     if (!response.body.token.catalog) {
@@ -102,7 +99,7 @@ module.exports = class V3Auth extends AuthBase {
     if (!catalog) {
       throw new Error("catalog not found")
     }
-    let endpoint = catalog.endpoints.find(e => e.interface == _interface && (!region || region == e.region))
+    let endpoint = catalog.endpoints.find(e => e.interface == endpointType && (!region || region == e.region))
     if (!endpoint) {
       throw new Error("endpoint not found")
     }

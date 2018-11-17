@@ -1,5 +1,5 @@
 const SwiftContainer = require("./container")
-const request = require('./request')
+const {request, requestWithPipe} = require('./request')
 
 module.exports = class Swift {
 
@@ -36,6 +36,14 @@ module.exports = class Swift {
     return request(options, (resolve, response) => {
       onSuccess(resolve, response)
     })
+  }
+
+  async callWithPipe(options, pipe) {
+    if (!options.headers) {
+      options.headers = {}
+    }
+    options.headers["X-Auth-Token"] = this.token
+    return requestWithPipe(options, pipe)
   }
 
   Container(name) {

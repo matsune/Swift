@@ -77,11 +77,11 @@ module.exports = class SwiftContainer {
   * /v1/{account}/{container}/{object}
   * Create or replace object
   */
-  async create(objectName, body) {
+  async create(objectName, readStream) {
     return this.client.call({
       url: this.url()+"/"+objectName,
       method: "PUT",
-      body: body
+      body: readStream
     }, (resolve, response) => {
       resolve(this.Object(objectName))
     })

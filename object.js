@@ -1,5 +1,5 @@
 module.exports = class SwiftObject {
-  
+
   constructor(container, name) {
     this.container = container
     this.name = name
@@ -16,15 +16,11 @@ module.exports = class SwiftObject {
   * /v1/{account}/{container}/{object}
   * Get object content and metadata
   */
-  async get() {
-    return this.container.client.call({
+  async write(stream) {
+    return this.container.client.callWithPipe({
       url: this.url(),
-      method: "GET",
-      // qs: qs,
-      // headers: headers
-    }, (resolve, response) => {
-      resolve(response.body)
-    })
+      method: "GET"
+    }, stream)
   }
 
   /**

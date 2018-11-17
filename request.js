@@ -14,7 +14,7 @@ function onError(reject, error, response) {
   }
 }
 
-module.exports = function request(options, onSuccess) {
+exports.request = function(options, onSuccess) {
   return new Promise((resolve, reject) => {
     _request(options, (error, response, body) => {
       if (isOk(response)) {
@@ -23,5 +23,14 @@ module.exports = function request(options, onSuccess) {
         onError(reject, error, response)
       }
     })
+  })
+}
+
+exports.requestWithPipe = function(options, pipe) {
+  return new Promise((resolve, reject) => {
+    _request(options)
+      .on('error', (e) => reject(e))
+      .on('end', resolve)
+      .pipe(pipe)
   })
 }

@@ -42,22 +42,6 @@ module.exports = class SwiftObject {
   }
 
   /**
-  * https://developer.openstack.org/api-ref/object-store/?expanded=create-or-update-object-metadata-detail,show-container-details-and-list-objects-detail#delete-object
-  *
-  * DELETE
-  * /v1/{account}/{container}/{object}
-  * Delete object
-  */
-  async delete() {
-    return this.container.client.call({
-      url: this.url(),
-      method: "DELETE"
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
-  }
-
-  /**
   * https://developer.openstack.org/api-ref/object-store/?expanded=show-container-details-and-list-objects-detail,show-object-metadata-detail#show-object-metadata
   *
   * HEAD

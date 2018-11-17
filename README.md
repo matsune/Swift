@@ -3,7 +3,7 @@ Swift is a client library for connecting Object Storage OpenStack Swift, support
 This library is inspired by golang's swift client library [ncw/swift](https://github.com/ncw/swift).
 
 ## Installation
-```sh
+```shell
 $ npm install --save client-swift
 ```
 
@@ -111,7 +111,7 @@ await client.delete("container1")
 ```
 
 #### Swift#metadata()
-Get account metadata
+Get account metadata
 ```js
 let metadata = await client.metadata()
 ```

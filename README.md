@@ -30,7 +30,7 @@ let objects = await container.list()
 let object = container.Object(objects[0].name)
 // download file
 let dst = fs.createWriteStream("a.txt")
-object.write(dst)
+(await object.get(dst)).body.pipe(dst);
 ```
 
 ## Documentation
@@ -62,7 +62,7 @@ let client = new Swift({
 |tenantId|$OS_TENANT_ID|
 |tenantDomain|$OS_PROJECT_DOMAIN_NAME|
 |tenantDomainId|$OS_PROJECT_DOMAIN_ID|
-|region|$OS_REGION_NAME (v2)|
+|region|$OS_REGION_NAME (v2, v3)|
 |trustId|$OS_TRUST_ID (v3)|
 |endpointType|$OS_ENDPOINT_TYPE|
 

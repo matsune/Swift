@@ -1,11 +1,13 @@
-const SwiftContainer = require("./container")
-const {request, requestWithPipe} = require('./request')
+import SwiftContainer from './container.js';
+import request from './request.js';
+import Auth from './auth/index.js';
 
-module.exports = class Swift {
+export default class Swift {
 
   constructor(data) {
     this.authUrl = data.authUrl
-    this.auth = require("./auth")(data)
+
+    this.auth = Auth(data);
     this.token = ""
     this.storageUrl = ""
   }
@@ -21,29 +23,26 @@ module.exports = class Swift {
 
   async authenticate() {
     let options = this.auth.authOptions(this.authUrl)
-    return request(options, (resolve, response) => {
-      this.token = this.auth.token(response)
-      this.storageUrl = this.auth.storageUrl(response)
-      resolve(this)
-    })
+    let response = await request(options);
+
+    let headers = response.headers,
+        json = await response.json();
+    this.token = this.auth.token(response, headers)
+    this.storageUrl = await this.auth.storageUrl(json, headers)
+
+    if (! this.token) {
+      throw new Error('Could not authenticate. No token');
+    }
+
+    return this;
   }
 
-  async call(options, onSuccess) {
+  call(options) {
     if (!options.headers) {
       options.headers = {}
     }
     options.headers["X-Auth-Token"] = this.token
-    return request(options, (resolve, response) => {
-      onSuccess(resolve, response)
-    })
-  }
-
-  async callWithPipe(options, pipe) {
-    if (!options.headers) {
-      options.headers = {}
-    }
-    options.headers["X-Auth-Token"] = this.token
-    return requestWithPipe(options, pipe)
+    return request(options);
   }
 
   Container(name) {
@@ -58,19 +57,12 @@ module.exports = class Swift {
   * Show account details and list containers
   */
   async list() {
-    return this.call({
-      url: this.storageUrl,
-      method: "GET",
-      qs: {
-        format: "json"
-      }
-    }, (resolve, response) => {
-      if (response.body) {
-        resolve(JSON.parse(response.body))
-      } else {
-        resolve([])
-      }
-    })
+    let response = await this.call({
+      url: this.storageUrl + '?format=json',
+      method: "GET"
+    });
+
+    return await response.json() || [];
   }
 
   /**
@@ -81,12 +73,10 @@ module.exports = class Swift {
   * Show account metadata
   */
   async metadata() {
-    return this.call({
+    return (await this.call({
       url: this.storageUrl,
       method: "HEAD"
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
+    })).headers;
   }
 
   /**
@@ -97,13 +87,11 @@ module.exports = class Swift {
   * Create, update, or delete account metadata
   */
   async updateMetadata(headers) {
-    return this.call({
+    return (await this.call({
       url: this.storageUrl,
       method: "POST",
       headers: headers
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
+    })).headers;
   }
 
   /**
@@ -114,13 +102,11 @@ module.exports = class Swift {
   * Create container
   */
   async create(container, headers) {
-    return this.call({
+    return this.Container(await this.call({
       url: this.storageUrl+"/"+container,
       method: "PUT",
       headers: headers
-    }, (resolve, response) => {
-      resolve(this.Container(container))
-    })
+    }));
   }
 
   /**
@@ -131,11 +117,9 @@ module.exports = class Swift {
   * Delete container
   */
   async delete(container) {
-    return this.call({
+    return (await this.call({
       url: this.storageUrl+"/"+container,
       method: "DELETE"
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
+    })).headers;
   }
 }

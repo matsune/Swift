@@ -1,36 +1,19 @@
-const _request = require("request")
+import fetch from 'node-fetch';
 
-function isOk(response) {
-  return response && 199 < response.statusCode && response.statusCode < 300
-}
+export default async function request(options) {
+  let url = options.url;
 
-function onError(reject, error, response) {
-  if (error) {
-    reject(error)
-  } else if (response.body.error) {
-    reject(response.body.error)
-  } else {
-    reject(response.body)
+  // console.log("Sending", JSON.stringify({...options, ...{body: ""}}));
+  // console.log("Body   ", options.body);
+  try {
+    let response = await fetch(url, options);
+    if (response.ok) {
+      // console.log("Response", response, Object.fromEntries(response.headers.entries()));
+      return response;
+    }
+
+    throw new Error("Request error: " + await response.text());
+  } catch(e) {
+    throw e;
   }
-}
-
-exports.request = function(options, onSuccess) {
-  return new Promise((resolve, reject) => {
-    _request(options, (error, response, body) => {
-      if (isOk(response)) {
-        onSuccess(resolve, response)
-      } else {
-        onError(reject, error, response)
-      }
-    })
-  })
-}
-
-exports.requestWithPipe = function(options, pipe) {
-  return new Promise((resolve, reject) => {
-    _request(options)
-      .on('error', (e) => reject(e))
-      .on('end', resolve)
-      .pipe(pipe)
-  })
 }

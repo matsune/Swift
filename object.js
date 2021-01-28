@@ -1,4 +1,4 @@
-module.exports = class SwiftObject {
+export default class SwiftObject {
 
   constructor(container, name) {
     this.container = container
@@ -16,11 +16,15 @@ module.exports = class SwiftObject {
   * /v1/{account}/{container}/{object}
   * Get object content and metadata
   */
-  async write(stream) {
-    return this.container.client.callWithPipe({
+  async write() {
+    return this.container.client.call({
       url: this.url(),
-      method: "GET"
-    }, stream)
+      method: "GET",
+    });
+  }
+
+  async get() {
+    return this.write();
   }
 
   /**
@@ -36,9 +40,7 @@ module.exports = class SwiftObject {
       url: this.url(),
       method: "COPY",
       headers: headers
-    }, (resolve, response) => {
-      resolve(response)
-    })
+    });
   }
 
   /**
@@ -49,12 +51,10 @@ module.exports = class SwiftObject {
   * Show object metadata
   */
   async metadata() {
-    return this.container.client.call({
+    return (await this.container.client.call({
       url: this.url(),
       method: "HEAD"
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
+    })).headers;
   }
 
   /**
@@ -65,12 +65,10 @@ module.exports = class SwiftObject {
   * Create or update object metadata
   */
   async updateMetadata(headers) {
-    return this.container.client.call({
+    return await (this.container.client.call({
       url: this.url(),
       method: "POST",
       headers: headers
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
+    })).headers;
   }
 }

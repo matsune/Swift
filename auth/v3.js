@@ -1,6 +1,6 @@
-const AuthBase = require("./base")
+import AuthBase from './base.js';
 
-module.exports = class V3Auth extends AuthBase {
+export default class V3Auth extends AuthBase {
 
   json() {
     let v3Auth = {}
@@ -79,30 +79,41 @@ module.exports = class V3Auth extends AuthBase {
     return {
       url: authUrl + "/auth/tokens",
       method: 'POST',
-      json: this.json()
+      headers: {
+        'Content-Type': 'application/json',
+        // This force the (CORS) preflight request to include
+        // Access-Control-Request-Headers: X-Subject-Token
+        // But keystone's HTTP headers must be configured propertly:
+        // Access-Control-(Allow|Expose)-Headers
+        'x-subject-token': '_foo_',
+      },
+      body: JSON.stringify(this.json())
     }
   }
 
-  token(response) {
-    return response.headers["x-subject-token"]
+  token(response, headers) {
+    return headers.get("x-subject-token")
   }
 
-  storageUrl(response) {
-    let type = "object-store"
-    let endpointType = this.data.endpointType || "public"
-    let region = ""
+  storageUrl(response, headers) {
+    let type = "object-store",
+        endpointType = this.data.endpointType || "public",
+        region = this.data.region || "";
 
-    if (!response.body.token.catalog) {
-      throw new Error("body.token.catalog not found")
+    if (!response.token.catalog) {
+      throw new Error("token.catalog not found")
     }
-    let catalog = response.body.token.catalog.find(e => e.type == type)
+
+    let catalog = response.token.catalog.find(e => e.type == type)
     if (!catalog) {
       throw new Error("catalog not found")
     }
+
     let endpoint = catalog.endpoints.find(e => e.interface == endpointType && (!region || region == e.region))
     if (!endpoint) {
       throw new Error("endpoint not found")
     }
+
     return endpoint.url
   }
 }

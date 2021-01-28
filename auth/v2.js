@@ -1,6 +1,6 @@
-const AuthBase = require("./base")
+import AuthBase from './base.js';
 
-module.exports = class V2Auth extends AuthBase {
+export default class V2Auth extends AuthBase {
   json() {
     let v2Auth = {}
     v2Auth.region = this.data.region
@@ -30,19 +30,20 @@ module.exports = class V2Auth extends AuthBase {
     return {
       url: authUrl + "/tokens",
       method: 'POST',
-      json: this.json()
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(this.json())
     }
   }
 
-  token(response) {
-    return response.body.access.token.id
+  token(response, headers) {
+    return response.access.token.id;
   }
 
-  storageUrl(response) {
+  storageUrl(response, headers) {
     let type = "object-store"
     let region = this.data.region || ""
 
-    let catalog = response.body.access.serviceCatalog.find(e => e.type == type)
+    let catalog = response.access.serviceCatalog.find(e => e.type == type)
     if (!catalog) {
       throw new Error("catalog not found")
     }

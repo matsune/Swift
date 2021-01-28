@@ -1,6 +1,6 @@
-const SwiftObject = require("./object")
+import SwiftObject from './object.js';
 
-module.exports = class SwiftContainer {
+export default class SwiftContainer {
   constructor(client, name) {
     this.client = client
     this.name = name
@@ -18,19 +18,12 @@ module.exports = class SwiftContainer {
   * Show container details and list objects
   */
   async list() {
-    return this.client.call({
-      url: this.url(),
+    let response = await this.client.call({
+      url: this.url() + '?format=json',
       method: "GET",
-      qs: {
-        format: "json"
-      }
-    }, (resolve, response) => {
-      if (response.body) {
-        resolve(JSON.parse(response.body))
-      } else {
-        resolve([])
-      }
-    })
+    });
+
+    return response.body ? await response.json() : [];
   }
 
   /**
@@ -41,12 +34,10 @@ module.exports = class SwiftContainer {
   * Show container metadata
   */
   async metadata() {
-    return this.client.call({
+    return (await this.client.call({
       url: this.url(),
       method: "HEAD"
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
+    })).headers;
   }
 
   /**
@@ -57,13 +48,11 @@ module.exports = class SwiftContainer {
   * Create, update, or delete container metadata
   */
   async updateMetadata(headers) {
-    return this.client.call({
+    return (await this.client.call({
       url: this.url(),
       method: "POST",
       headers: headers
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
+    })).headers;
   }
 
   Object(name) {
@@ -78,13 +67,11 @@ module.exports = class SwiftContainer {
   * Create or replace object
   */
   async create(objectName, readStream) {
-    return this.client.call({
+    return this.Object(await this.client.call({
       url: this.url()+"/"+objectName,
       method: "PUT",
       body: readStream
-    }, (resolve, response) => {
-      resolve(this.Object(objectName))
-    })
+    }));
   }
 
   /**
@@ -95,11 +82,9 @@ module.exports = class SwiftContainer {
   * Delete object
   */
   async delete(objectName) {
-    return this.client.call({
+    return (await this.client.call({
       url: this.url()+"/"+objectName,
       method: "DELETE"
-    }, (resolve, response) => {
-      resolve(response.headers)
-    })
+    })).headers;
   }
 }

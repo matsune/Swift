@@ -1,5 +1,5 @@
 // abstract class
-module.exports = class AuthBase {
+export default class AuthBase {
   constructor(data) {
     this.data = data
   }
@@ -12,11 +12,11 @@ module.exports = class AuthBase {
     this.unimplemented("authOptions")
   }
 
-  token(response) {
+  token(response, headers) {
     this.unimplemented("token")
   }
 
-  storageUrl(response) {
+  storageUrl(response, headers) {
     this.unimplemented("storageUrl")
   }
 }

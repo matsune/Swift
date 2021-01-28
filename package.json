@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "description": "Object Storage OpenStack Swift client for Node.js",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,7 +15,7 @@
   ],
   "author": "matsune",
   "license": "ISC",
-  "dependencies": {
-    "request": "^2.88.0"
+  "devDependencies": {
+    "node-fetch": "^2.6.1"
   }
 }

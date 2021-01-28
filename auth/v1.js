@@ -1,6 +1,6 @@
-const AuthBase = require("./base")
+import AuthBase from './base.js';
 
-module.exports = class V1Auth extends AuthBase {
+export default class V1Auth extends AuthBase {
   authOptions(authUrl) {
     return {
       url: authUrl,
@@ -12,11 +12,11 @@ module.exports = class V1Auth extends AuthBase {
     }
   }
 
-  token(response) {
-    return response.headers['x-auth-token']
+  token(response, headers) {
+    return headers.get('x-auth-token');
   }
 
-  storageUrl(response) {
-    return response.headers['x-storage-url']
+  storageUrl(response, headers) {
+    return headers.get('x-storage-url');
   }
 }
